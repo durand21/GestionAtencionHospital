@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Paciente - Sistema Hospitalario</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border: 2px solid #e8f4fd;
+            border-radius: 15px;
+            background: #fafcff;
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input, select, textarea {
+            padding: 12px 15px;
+            border: 2px solid #e8f4fd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .priority-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .priority-option {
+            padding: 15px;
+            border: 2px solid #e8f4fd;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .priority-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .priority-option.selected {
+            border-color: #3498db;
+            background: #e8f4fd;
+        }
+
+        .priority-alta { border-left: 5px solid #e74c3c; }
+        .priority-media { border-left: 5px solid #f39c12; }
+        .priority-baja { border-left: 5px solid #27ae60; }
+
+        .priority-option.selected.priority-alta { 
+            background: #fdf2f2; 
+            border-color: #e74c3c;
+        }
+        .priority-option.selected.priority-media { 
+            background: #fdf8f2; 
+            border-color: #f39c12;
+        }
+        .priority-option.selected.priority-baja { 
+            background: #f2fdf7; 
+            border-color: #27ae60;
+        }
+
+        .priority-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .priority-description {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        .expediente-preview {
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .expediente-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+
+        .expediente-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            z-index: 9999;
+            max-width: 300px;
+            word-wrap: break-word;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .notification.success {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+        }
+
+        .notification.error {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 15px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .success-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .success-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            animation: modalSlide 0.3s ease-out;
+        }
+
+        @keyframes modalSlide {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .success-icon {
+            font-size: 4em;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+
+        .success-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .success-expediente {
+            font-size: 1.2em;
+            color: #3498db;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .priority-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .back-button {
+                position: static;
+                margin-bottom: 20px;
+                align-self: flex-start;
+            }
+
+            body {
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="goBack()">
+        ← Volver al Menú
+    </button>
+
+    <div class="container">
+        <div class="header">
+            <h1>👤 Registro de Nuevo Paciente</h1>
+            <p>Complete todos los campos requeridos para registrar al paciente</p>
+        </div>
+
+        <form id="patientForm">
+            <!-- Información Personal -->
+            <div class="form-section">
+                <div class="section-title">
+                    <span>📋</span> Información Personal
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nombres">
+                            Nombres <span class="required">*</span>
+                        </label>
+                        <input type="text" id="nombres" name="nombres" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="apellidos">
+                            Apellidos <span class="required">*</span>
+                        </label>
+                        <input type="text" id="apellidos" name="apellidos" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cedula">
+                            Cédula de Identidad <span class="required">*</span>
+                        </label>
+                        <input type="text" id="cedula" name="cedula" placeholder="Ej: 0801-1990-12345" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fechaNacimiento">
+                            Fecha de Nacimiento <span class="required">*</span>
+                        </label>
+                        <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edad">Edad</label>
+                        <input type="number" id="edad" name="edad" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="sexo">
+                            Sexo <span class="required">*</span>
+                        </label>
+                        <select id="sexo" name="sexo" required>
+                            <option value="">Seleccione...</option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">
+                            Teléfono <span class="required">*</span>
+                        </label>
+                        <input type="tel" id="telefono" name="telefono" placeholder="Ej: +504 9999-9999" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="correo@ejemplo.com">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="direccion">
+                            Dirección Completa <span class="required">*</span>
+                        </label>
+                        <textarea id="direccion" name="direccion" placeholder="Ingrese la dirección completa del paciente..." required></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información Médica -->
+            <div class="form-section">
+                <div class="section-title">
+                    <span>🩺</span> Información Médica
+                </div>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="motivoConsulta">
+                            Motivo de la Consulta <span class="required">*</span>
+                        </label>
+                        <textarea id="motivoConsulta" name="motivoConsulta" placeholder="Describa brevemente el motivo de la consulta..." required></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="sintomas">
+                            Síntomas Actuales <span class="required">*</span>
+                        </label>
+                        <textarea id="sintomas" name="sintomas" placeholder="Describa los síntomas que presenta el paciente..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="tiempoSintomas">
+                            Tiempo con Síntomas
+                        </label>
+                        <select id="tiempoSintomas" name="tiempoSintomas">
+                            <option value="">Seleccione...</option>
+                            <option value="Menos de 1 día">Menos de 1 día</option>
+                            <option value="1-3 días">1-3 días</option>
+                            <option value="4-7 días">4-7 días</option>
+                            <option value="1-2 semanas">1-2 semanas</option>
+                            <option value="Más de 2 semanas">Más de 2 semanas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="alergias">Alergias Conocidas</label>
+                        <textarea id="alergias" name="alergias" placeholder="Medicamentos, alimentos, etc."></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="medicamentosActuales">Medicamentos Actuales</label>
+                        <textarea id="medicamentosActuales" name="medicamentosActuales" placeholder="Liste los medicamentos que está tomando actualmente..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nivel de Prioridad -->
+            <div class="form-section">
+                <div class="section-title">
+                    <span>🚨</span> Nivel de Prioridad
+                </div>
+                <div class="priority-selector">
+                    <div class="priority-option priority-alta" data-priority="alta">
+                        <div class="priority-title">🔴 ALTA</div>
+                        <div class="priority-description">Emergencia médica, requiere atención inmediata</div>
+                    </div>
+                    <div class="priority-option priority-media" data-priority="media">
+                        <div class="priority-title">🟡 MEDIA</div>
+                        <div class="priority-description">Urgente, debe ser atendido pronto</div>
+                    </div>
+                    <div class="priority-option priority-baja" data-priority="baja">
+                        <div class="priority-title">🟢 BAJA</div>
+                        <div class="priority-description">Consulta general, puede esperar</div>
+                    </div>
+                </div>
+                <input type="hidden" id="prioridad" name="prioridad" required>
+            </div>
+
+            <!-- Número de Expediente -->
+            <div class="form-section">
+                <div class="section-title">
+                    <span>📄</span> Número de Expediente
+                </div>
+                <div class="expediente-preview">
+                    <div class="expediente-number" id="expedienteNumber">EXP-2025-0001</div>
+                    <div class="expediente-label">Número de expediente generado automáticamente</div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    💾 Registrar Paciente
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">
+                    🔄 Limpiar Formulario
+                </button>
+                <button type="button" class="btn btn-danger" onclick="goBack()">
+                    ❌ Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal de Éxito -->
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <div class="success-icon">✅</div>
+            <div class="success-title">¡Paciente Registrado!</div>
+            <div class="success-expediente" id="successExpediente">EXP-2025-0001</div>
+            <p>El paciente ha sido registrado exitosamente en el sistema.</p>
+            <div style="margin-top: 20px;">
+                <button class="btn btn-primary" onclick="registrarOtro()">Registrar Otro</button>
+                <button class="btn btn-secondary" onclick="volverMenu()">Volver al Menú</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let expedienteCounter = 1;
+
+        // Cargar contador desde localStorage
+        function cargarContadorExpediente() {
+            const pacientes = JSON.parse(localStorage.getItem('pacientes') || '[]');
+            if (pacientes.length > 0) {
+                expedienteCounter = pacientes.length + 1;
+            }
+        }
+
+        // Generar número de expediente
+        function generarExpediente() {
+            const year = new Date().getFullYear();
+            const number = expedienteCounter.toString().padStart(4, '0');
+            return `EXP-${year}-${number}`;
+        }
+
+        // Calcular edad automáticamente
+        document.getElementById('fechaNacimiento').addEventListener('change', function() {
+            const fechaNac = new Date(this.value);
+            const hoy = new Date();
+            let edad = hoy.getFullYear() - fechaNac.getFullYear();
+            const m = hoy.getMonth() - fechaNac.getMonth();
+            
+            if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) {
+                edad--;
+            }
+            
+            document.getElementById('edad').value = edad >= 0 ? edad : '';
+        });
+
+        // Manejar selección de prioridad
+        document.querySelectorAll('.priority-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.priority-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                this.classList.add('selected');
+                document.getElementById('prioridad').value = this.dataset.priority;
+            });
+        });
+
+        // Formatear cédula hondureña
+        document.getElementById('cedula').addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length >= 4) {
+                value = value.substring(0, 4) + '-' + value.substring(4);
+            }
+            if (value.length >= 9) {
+                value = value.substring(0, 9) + '-' + value.substring(9, 14);
+            }
+            this.value = value;
+        });
+
+        // Formatear teléfono
+        document.getElementById('telefono').addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length >= 3 && value.startsWith('504')) {
+                value = '+504 ' + value.substring(3);
+                if (value.length >= 12) {
+                    value = value.substring(0, 9) + '-' + value.substring(9, 13);
+                }
+            } else if (value.length >= 4) {
+                value = '+504 ' + value;
+                if (value.length >= 12) {
+                    value = value.substring(0, 9) + '-' + value.substring(9, 13);
+                }
+            }
+            this.value = value;
+        });
+
+        // Manejar envío del formulario
+        document.getElementById('patientForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validarFormulario()) {
+                registrarPaciente();
+            }
+        });
+
+        function validarFormulario() {
+            const requiredFields = document.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#e74c3c';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#e8f4fd';
+                }
+            });
+
+            if (!document.getElementById('prioridad').value) {
+                showNotification('Por favor seleccione un nivel de prioridad', 'error');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                showNotification('Por favor complete todos los campos requeridos', 'error');
+            }
+
+            return isValid;
+        }
+
+        function registrarPaciente() {
+            const formData = new FormData(document.getElementById('patientForm'));
+            const expediente = generarExpediente();
+            
+            const paciente = {
+                expediente: expediente,
+                fechaRegistro: new Date().toISOString(),
+                nombres: formData.get('nombres'),
+                apellidos: formData.get('apellidos'),
+                cedula: formData.get('cedula'),
+                fechaNacimiento: formData.get('fechaNacimiento'),
+                edad: formData.get('edad'),
+                sexo: formData.get('sexo'),
+                telefono: formData.get('telefono'),
+                email: formData.get('email'),
+                direccion: formData.get('direccion'),
+                motivoConsulta: formData.get('motivoConsulta'),
+                sintomas: formData.get('sintomas'),
+                tiempoSintomas: formData.get('tiempoSintomas'),
+                alergias: formData.get('alergias'),
+                medicamentosActuales: formData.get('medicamentosActuales'),
+                prioridad: formData.get('prioridad'),
+                estado: 'en_espera',
+                horaRegistro: new Date().toLocaleTimeString()
+            };
+
+            // Guardar en localStorage
+            const pacientes = JSON.parse(localStorage.getItem('pacientes') || '[]');
+            pacientes.push(paciente);
+            localStorage.setItem('pacientes', JSON.stringify(pacientes));
+
+            // Incrementar contador
+            expedienteCounter++;
+            
+            // Mostrar modal de éxito
+            document.getElementById('successExpediente').textContent = expediente;
+            document.getElementById('successModal').style.display = 'flex';
+            
+            // Actualizar contador en el sistema principal
+            actualizarContadoresEnMenu();
+        }
+
+        function actualizarContadoresEnMenu() {
+            // Intentar comunicarse con la ventana padre si existe
+            if (window.opener && !window.opener.closed) {
+                try {
+                    // Enviar mensaje a la ventana padre para actualizar contadores
+                    window.opener.postMessage({
+                        type: 'patient_registered',
+                        data: { action: 'update_counters' }
+                    }, '*');
+                } catch (e) {
+                    console.log('No se pudo comunicar con la ventana padre');
+                }
+            }
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('patientForm').reset();
+            document.querySelectorAll('.priority-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            document.getElementById('expedienteNumber').textContent = generarExpediente();
+            
+            document.querySelectorAll('input, select, textarea').forEach(field => {
+                field.style.borderColor = '#e8f4fd';
+            });
+
+            showNotification('Formulario limpiado correctamente', 'success');
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        function goBack() {
+            if (window.opener && !window.opener.closed) {
+                window.close();
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        function registrarOtro() {
+            document.getElementById('successModal').style.display = 'none';
+            limpiarFormulario();
+        }
+
+        function volverMenu() {
+            goBack();
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarContadorExpediente();
+            document.getElementById('expedienteNumber').textContent = generarExpediente();
+            showNotification('Formulario de registro listo', 'success');
+        });
+
+        // Manejar mensajes de otras ventanas
+        window.addEventListener('message', function(event) {
+            // Aquí podrías manejar mensajes del menú principal si es necesario
+        });
+    </script>
+</body>
+</html>
